@@ -4,6 +4,14 @@ A fully interactive and animated visualizer for the classic **N-Queens Problem**
 
 ---
 
+## 🚀 Live Demo
+
+You can view the live demo of the project at the following link:
+
+[**N-Queens Visualizer**](https://n-queens-visualizer-mohit26.netlify.app/)
+
+---
+
 ## 📁 Project Structure
 
 ```
