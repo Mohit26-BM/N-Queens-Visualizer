@@ -51,7 +51,7 @@ The **N-Queens problem** is a well-known algorithmic challenge that involves pla
 No installation or setup required.
 
 1. Clone or download the repository.
-2. Open the `N_Queens_Visualizer.html` file in your browser.
+2. Open the `index.html` file in your browser.
 3. Choose the board size, language, and speed.
 4. Click **Start** to begin the visualization.
 
