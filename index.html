@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>N-Queens Visualization</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        display: flex;
+        justify-content: flex-start;
+        align-items: flex-start;
+        flex-direction: column;
+        height: 100vh;
+        margin: 0;
+        padding: 20px;
+        background-image: url("chess.jpg");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      h1 {
+        margin-bottom: 20px;
+        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+      }
+
+      input,
+      button {
+        padding: 10px;
+        font-size: 16px;
+        margin: 5px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border: none;
+        border-radius: 5px;
+        color: black;
+      }
+
+      .board {
+        display: grid;
+        gap: 0;
+        margin-top: 20px;
+        border: 2px solid white;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.5);
+        width: max-content;
+        background-color: rgba(245, 245, 245, 0.8);
+        transition: background-color 0.3s ease;
+      }
+
+      .cell {
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 30px;
+        transition: background-color 0.3s, transform 0.3s;
+      }
+
+      .cell:hover {
+        transform: scale(1.1);
+      }
+
+      .black {
+        background-color: black;
+      }
+
+      .white {
+        background-color: white;
+      }
+
+      .queen {
+        color: gold;
+        animation: placeQueen 0.5s ease-in-out, blink 1s infinite;
+      }
+
+      @keyframes placeQueen {
+        0% {
+          transform: scale(0.2);
+          opacity: 0;
+        }
+
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      @keyframes blink {
+        50% {
+          opacity: 0.8;
+        }
+      }
+
+      input[type="number"] {
+        width: 200px;
+        height: 40px;
+        font-size: 18px;
+        padding: 10px;
+        text-align: center;
+        border-radius: 8px;
+      }
+
+      button {
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #45a049;
+      }
+
+      #solutionCounter {
+        font-size: 20px;
+        font-weight: bold;
+        margin-top: 10px;
+      }
+
+      #controls {
+        margin-top: 15px;
+        display: flex;
+        gap: 10px;
+      }
+
+      #summary {
+        margin-top: 20px;
+      }
+
+      .dark-mode {
+        background-color: #121212;
+        color: #ffffff;
+      }
+
+      .dark-mode .board {
+        background-color: #333;
+        border-color: #fff;
+      }
+
+      .dark-mode .cell.white {
+        background-color: #555;
+      }
+
+      .dark-mode .cell.black {
+        background-color: #222;
+      }
+
+      .dark-mode .queen {
+        color: #ffcc00;
+      }
+
+      .dark-mode button {
+        background-color: #555;
+      }
+
+      .dark-mode button:hover {
+        background-color: #444;
+      }
+
+      .dark-mode input {
+        background-color: #333;
+        color: #fff;
+        border: 1px solid #555;
+      }
+
+      .dark-mode input::placeholder {
+        color: #aaa;
+      }
+
+      #mainButtons {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
+      }
+
+      .flag-icon {
+        width: 24px;
+        height: 24px;
+        margin-right: 10px;
+        vertical-align: middle;
+      }
+
+      .dropdown {
+        margin-top: 10px;
+        display: inline-block;
+      }
+
+      .dropdown-content {
+        display: none;
+        position: absolute;
+        background-color: white;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+      }
+
+      .dropdown:hover .dropdown-content {
+        display: block;
+      }
+
+      .dropdown-content a {
+        display: flex;
+        align-items: center;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: black;
+      }
+
+      .dropdown-content a:hover {
+        background-color: #ddd;
+      }
+
+      #dialog {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        padding: 20px;
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
+        border-radius: 8px;
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <a
+    href="about.html"
+    style="
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      text-decoration: none;
+      color: white;
+    "
+  >
+    <button
+      style="
+        background-color: #4caf50;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+        cursor: pointer;
+      "
+    >
+      ?
+    </button>
+  </a>
+
+  <body>
+    <h1><i class="fas fa-chess-queen"></i> N-Queens Visualization</h1>
+
+    <div class="dropdown">
+      <button class="dropbtn">Select Language</button>
+      <div class="dropdown-content">
+        <a href="#" onclick="setLanguage('en')">
+          <img src="uk.png" alt="English" class="flag-icon" /> English
+        </a>
+        <a href="#" onclick="setLanguage('fr')">
+          <img src="france.png" alt="French" class="flag-icon" /> Français
+        </a>
+        <a href="#" onclick="setLanguage('de')">
+          <img src="germany.png" alt="German" class="flag-icon" /> Deutsch
+        </a>
+      </div>
+    </div>
+
+    <div id="dialog"></div>
+
+    <div id="mainButtons">
+      <input
+        type="number"
+        id="boardSize"
+        placeholder="Enter board size"
+        min="1"
+        max="10"
+      />
+      <button id="startBtn" onclick="startVisualization()">Start</button>
+      <button id="toggleDarkModeBtn" onclick="toggleDarkMode()">
+        Toggle Dark Mode
+      </button>
+      <button id="resetBtn" onclick="resetPage()">Reset</button>
+      <button id="fullscreenBtn" onclick="toggleFullscreen()">
+        Fullscreen
+      </button>
+    </div>
+
+    <div id="controls">
+      <label for="speedRange">Speed: </label>
+      <input type="range" id="speedRange" min="1" max="10" value="5" step="1" />
+      <label for="speedRange" id="speedLabel">1x</label>
+      <button id="pauseBtn">Pause</button>
+      <button id="playBtn" style="display: none">Play</button>
+    </div>
+
+    <div id="solutionCounter"></div>
+    <div id="board" class="board"></div>
+    <div id="summary"></div>
+
+    <audio id="backgroundMusic" loop>
+      <source src="background.mp3" type="audio/mpeg" />
+      Your browser does not support the audio element.
+    </audio>
+
+    <script>
+      const translations = {
+        en: {
+          start: "Start",
+          toggleDarkMode: "Toggle Dark Mode",
+          solutionsFound: "Total solutions found: ",
+          solutionLabel: "Solution",
+          allSolutionsDisplayed: "All solutions displayed.",
+          noSolution: "No solution exists for N = ",
+          speedLabel: "Speed:",
+          pause: "Pause",
+          play: "Play",
+          reset: "Reset",
+          fullscreen: "Fullscreen",
+          tooLarge: "Value too large. Please enter N ≤ 10.",
+        },
+        fr: {
+          start: "Commencer",
+          toggleDarkMode: "Mode Sombre",
+          solutionsFound: "Solutions totales trouvées : ",
+          solutionLabel: "Solution",
+          allSolutionsDisplayed: "Toutes les solutions affichées.",
+          noSolution: "Aucune solution n'existe pour N = ",
+          speedLabel: "Vitesse :",
+          pause: "Pause",
+          play: "Jouer",
+          reset: "Réinitialiser",
+          fullscreen: "Plein écran",
+          tooLarge: "Valeur trop grande. Veuillez entrer N ≤ 10.",
+        },
+        de: {
+          start: "Starten",
+          toggleDarkMode: "Dunkelmodus umschalten",
+          solutionsFound: "Gesamtzahl der gefundenen Lösungen: ",
+          solutionLabel: "Lösung",
+          allSolutionsDisplayed: "Alle Lösungen angezeigt.",
+          noSolution: "Keine Lösung existiert für N = ",
+          speedLabel: "Geschwindigkeit:",
+          pause: "Pause",
+          play: "Abspielen",
+          reset: "Zurücksetzen",
+          fullscreen: "Vollbild",
+          tooLarge: "Wert zu groß. Bitte geben Sie N ≤ 10 ein.",
+        },
+      };
+
+      let currentLanguage = "en";
+      let isPaused = false;
+      let animationSpeed = 1000; // Default speed (1x)
+
+      function setLanguage(language) {
+        currentLanguage = language;
+        updateTexts();
+      }
+
+      function updateTexts() {
+        const language = translations[currentLanguage];
+        document.getElementById("startBtn").textContent = language.start;
+        document.getElementById("toggleDarkModeBtn").textContent =
+          language.toggleDarkMode;
+        document.querySelector('label[for="speedRange"]').textContent =
+          language.speedLabel;
+        document.getElementById("pauseBtn").textContent = language.pause;
+        document.getElementById("playBtn").textContent = language.play;
+        document.getElementById("resetBtn").textContent = language.reset; // <-- Add this
+        document.getElementById("fullscreenBtn").textContent =
+          language.fullscreen; // <-- And this
+      }
+
+      function toggleDarkMode() {
+        document.body.classList.toggle("dark-mode");
+      }
+
+      document
+        .getElementById("speedRange")
+        .addEventListener("input", function () {
+          const value = parseInt(this.value);
+          const speedMultiplier = value / 5;
+          animationSpeed = 1000 / speedMultiplier;
+          document.getElementById(
+            "speedLabel"
+          ).innerText = `${speedMultiplier.toFixed(2)}x`;
+        });
+
+      document
+        .getElementById("pauseBtn")
+        .addEventListener("click", function () {
+          isPaused = true;
+          this.style.display = "none";
+          document.getElementById("playBtn").style.display = "inline";
+
+          const backgroundMusic = document.getElementById("backgroundMusic");
+          backgroundMusic.pause(); // Pause music
+        });
+
+      document.getElementById("playBtn").addEventListener("click", function () {
+        isPaused = false;
+        this.style.display = "none";
+        document.getElementById("pauseBtn").style.display = "inline";
+
+        const backgroundMusic = document.getElementById("backgroundMusic");
+        backgroundMusic.play(); // Resume music
+      });
+
+      function sleep(ms) {
+        return new Promise((resolve) => setTimeout(resolve, ms));
+      }
+
+      async function isSafe(board, row, col, size) {
+        for (let i = 0; i < row; i++) {
+          if (board[i][col] === 1) return false;
+        }
+        for (let i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+          if (board[i][j] === 1) return false;
+        }
+        for (let i = row, j = col; i >= 0 && j < size; i--, j++) {
+          if (board[i][j] === 1) return false;
+        }
+        return true;
+      }
+
+      function showDialog(message) {
+        const dialog = document.getElementById("dialog");
+        dialog.innerText = message;
+        dialog.style.display = "block";
+        setTimeout(() => {
+          dialog.style.display = "none";
+        }, 6000);
+      }
+
+      async function solveNQueens(board, row, size, solutions) {
+        if (row >= size) {
+          const solution = board.map((row) => [...row]);
+          solutions.push(solution);
+          return false;
+        }
+
+        for (let col = 0; col < size; col++) {
+          if (await isSafe(board, row, col, size)) {
+            board[row][col] = 1;
+            if (await solveNQueens(board, row + 1, size, solutions)) {
+              return true;
+            }
+            board[row][col] = 0;
+          }
+        }
+        return false;
+      }
+
+      function resetPage() {
+        location.reload();
+      }
+
+      function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen();
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      }
+
+      function createBoard(size) {
+        let board = [];
+        for (let i = 0; i < size; i++) {
+          board.push(new Array(size).fill(0));
+        }
+        return board;
+      }
+
+      function renderBoard(board) {
+        const size = board.length;
+        const boardElement = document.getElementById("board");
+        boardElement.innerHTML = "";
+        boardElement.style.gridTemplateColumns = `repeat(${size}, 50px)`;
+        boardElement.style.gridTemplateRows = `repeat(${size}, 50px)`;
+
+        for (let i = 0; i < size; i++) {
+          for (let j = 0; j < size; j++) {
+            const cell = document.createElement("div");
+            cell.className = `cell ${(i + j) % 2 === 0 ? "white" : "black"}`;
+            if (board[i][j] === 1) {
+              cell.innerHTML = '<i class="fas fa-chess-queen queen"></i>';
+            }
+            boardElement.appendChild(cell);
+          }
+        }
+      }
+
+      async function showSolutions(solutions) {
+        const language = translations[currentLanguage];
+        for (let i = 0; i < solutions.length; i++) {
+          if (isPaused) {
+            await new Promise((resolve) => {
+              const interval = setInterval(() => {
+                if (!isPaused) {
+                  clearInterval(interval);
+                  resolve();
+                }
+              }, 100);
+            });
+          }
+          document.getElementById("solutionCounter").innerText = `${
+            language.solutionLabel
+          } ${i + 1}`;
+          renderBoard(solutions[i]);
+          await sleep(animationSpeed);
+        }
+
+        document.getElementById("summary").innerText =
+          language.allSolutionsDisplayed;
+        const backgroundMusic = document.getElementById("backgroundMusic");
+        backgroundMusic.pause();
+        backgroundMusic.currentTime = 0;
+      }
+
+      function disableLanguageChange() {
+        const dropdown = document.querySelector(".dropdown");
+        dropdown.style.pointerEvents = "none";
+        dropdown.style.opacity = "0.5";
+      }
+
+      async function startVisualization() {
+        const size = parseInt(document.getElementById("boardSize").value);
+        if (isNaN(size) || size < 1) {
+          showDialog(translations[currentLanguage].noSolution + size);
+          return;
+        }
+        if (size > 10) {
+          showDialog(translations[currentLanguage].tooLarge);
+          return;
+        }
+
+        disableLanguageChange();
+        const backgroundMusic = document.getElementById("backgroundMusic");
+        backgroundMusic.currentTime = 17;
+        backgroundMusic.play().catch(() => {
+          console.log(
+            "Background music autoplay was prevented. Playing after user interaction."
+          );
+        });
+
+        const board = createBoard(size);
+        const solutions = [];
+        await solveNQueens(board, 0, size, solutions);
+
+        if (solutions.length > 0) {
+          showDialog(
+            translations[currentLanguage].solutionsFound + solutions.length
+          );
+          await showSolutions(solutions);
+        } else {
+          showDialog(translations[currentLanguage].noSolution + size);
+        }
+      }
+      updateTexts();
+    </script>
+  </body>
+</html>

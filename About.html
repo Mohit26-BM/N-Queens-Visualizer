@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>About - N-Queens Visualization</title>
+    <link rel="stylesheet" href="styles.css" />
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 20px;
+        background-image: url("chess.jpg");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        color: #333;
+      }
+
+      .overlay {
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+      }
+
+      .container {
+        max-width: 800px;
+        margin: 0 auto;
+      }
+
+      h1 {
+        text-align: center;
+        color: #4caf50;
+        font-size: 2.5em;
+        margin-bottom: 20px;
+      }
+
+      h2 {
+        color: #333;
+        font-size: 1.8em;
+        margin-top: 20px;
+      }
+
+      p {
+        line-height: 1.8;
+        font-size: 1.2em;
+        margin-bottom: 20px;
+      }
+
+      ul,
+      ol {
+        margin-left: 20px;
+        font-size: 1.1em;
+        line-height: 1.6;
+      }
+
+      a {
+        color: #4caf50;
+        text-decoration: none;
+        font-weight: bold;
+      }
+
+      a:hover {
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="overlay">
+        <h1>About the N-Queens Visualization</h1>
+        <p>
+          The N-Queens problem is a classic computer science challenge where the
+          objective is to place N chess queens on an NxN chessboard so that no
+          two queens threaten each other. This visualization allows you to see
+          how the algorithm solves the problem in real-time.
+        </p>
+
+        <h2>Key Features:</h2>
+        <ul>
+          <li>
+            Backtracking Algorithm: Uses recursive backtracking to explore
+            potential queen placements and checks for conflicts in rows,
+            columns, and diagonals.
+          </li>
+          <li>
+            Dynamic Visualization: The chessboard updates in real-time, allowing
+            you to see the solution process step by step.
+          </li>
+          <li>
+            Customizable Board Size: Users can input the board size (N) to
+            explore different scenarios.
+          </li>
+          <li>
+            Dark Mode: Toggle between light and dark themes for comfortable
+            viewing.
+          </li>
+          <li>Language Support: Switch between English, French, and German.</li>
+          <li>
+            Full-Screen Mode: Enter full-screen mode for an immersive
+            experience.
+          </li>
+        </ul>
+
+        <h2>How to Use:</h2>
+        <ol>
+          <li>
+            Enter the Board Size: Use the input field to specify the size of the
+            chessboard.
+          </li>
+          <li>
+            Start the Visualization: Click the "Start" button to begin the
+            visualization of the N-Queens solution.
+          </li>
+          <li>
+            Control the Speed: Use the speed slider to adjust the pace of the
+            visualization.
+          </li>
+          <li>
+            Pause/Play: Pause the visualization at any time and resume it when
+            ready.
+          </li>
+          <li>
+            Reset: Reset the board to start over with the same or a different
+            board size.
+          </li>
+          <li>
+            Toggle Dark Mode: Switch between dark and light themes using the
+            "Toggle Dark Mode" button.
+          </li>
+          <li>
+            Change Language: Use the language dropdown to switch the interface
+            language.
+          </li>
+          <li>
+            Full-Screen Mode: Click the "Fullscreen" button for an enhanced
+            view.
+          </li>
+        </ol>
+        <p><a href="index.html">Return to Visualization</a></p>
+      </div>
+    </div>
+  </body>
+</html>
