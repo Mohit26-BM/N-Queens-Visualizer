@@ -68,7 +68,7 @@
       }
 
       .board {
-        display: grid;
+        display: none;
         margin-top: 20px;
         border: 2px solid white;
         border-radius: 8px;
@@ -225,18 +225,20 @@ const boardSize = document.getElementById("boardSize");
         }
       }
 
-      function render(board) {
-        boardEl.innerHTML = "";
-        boardEl.style.gridTemplateColumns = `repeat(${board.length}, 50px)`;
-        board.forEach((r, i) =>
-          r.forEach((c, j) => {
-            const d = document.createElement("div");
-            d.className = `cell ${(i + j) % 2 ? "black" : "white"}`;
-            if (c) d.innerHTML = '<i class="fas fa-chess-queen queen"></i>';
-            boardEl.appendChild(d);
-          })
-        );
-      }
+function render(board) {
+  boardEl.style.display = "grid"; // ✅ show only when ready
+  boardEl.innerHTML = "";
+  boardEl.style.gridTemplateColumns = `repeat(${board.length}, 50px)`;
+
+  board.forEach((r, i) =>
+    r.forEach((c, j) => {
+      const d = document.createElement("div");
+      d.className = `cell ${(i + j) % 2 ? "black" : "white"}`;
+      if (c) d.innerHTML = '<i class="fas fa-chess-queen queen"></i>';
+      boardEl.appendChild(d);
+    })
+  );
+}
 
       async function startVisualization() {
         const n = parseInt(boardSize.value);
@@ -248,7 +250,7 @@ const boardSize = document.getElementById("boardSize");
         const board = createBoard(n);
         const solutions = [];
         await solve(board, 0, solutions);
-
+showDialog(`Total Solutions: ${solutions.length}`);
         for (let i = 0; i < solutions.length; i++) {
           while (isPaused) await sleep(100);
           solutionCounter.innerText = `Solution ${i + 1}`;
@@ -256,7 +258,6 @@ const boardSize = document.getElementById("boardSize");
           await sleep(animationSpeed);
         }
 
-        showDialog(`Total solutions found: ${solutions.length}`);
       }
 
       function resetPage() {
@@ -273,4 +274,5 @@ const boardSize = document.getElementById("boardSize");
     </script>
   </body>
 </html>
+
 
