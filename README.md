@@ -18,10 +18,6 @@ You can view the live demo of the project at the following link:
 N-Queens-Visualizer/
 ├── index.html
 ├── chess.jpg
-├── background.mp3 (If you want to add a background sound.)
-├── uk.png
-├── france.png
-├── germany.png
 ├── about.html 
 └── main.png
 ```
