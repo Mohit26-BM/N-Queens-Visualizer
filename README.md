@@ -34,8 +34,6 @@ The **N-Queens problem** is a well-known algorithmic challenge that involves pla
 
 - ♟️ **Animated chessboard**: Real-time queen placement on the board
 - ⏱️ **Speed control**: Adjust animation speed from slow to fast
-- 🌓 **Dark mode**: Toggle between light and dark themes
-- 🌐 **Multilingual support**: Interface available in English 🇬🇧, French 🇫🇷, and German 🇩🇪
 - ⏸️ **Pause/Resume**: Control the flow of visualization
 - 📺 **Fullscreen mode**: Focused viewing experience
 
