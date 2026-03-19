@@ -1,280 +1,254 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>N-Queens Visualization</title>
-
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
-    />
-
-    <style>
-      body {
-        font-family: Arial, sans-serif;
-        display: flex;
-        flex-direction: column;
-        height: 100vh;
-        margin: 0;
-        padding: 20px;
-        background-image: url("chess.jpg");
-        background-size: cover;
-        background-position: center;
-        color: white;
-      }
-
-      h1 {
-        margin-bottom: 20px;
-        text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
-      }
-
-      input,
-      button {
-        padding: 10px;
-        font-size: 16px;
-        margin: 5px;
-        border-radius: 5px;
-        border: none;
-      }
-
-      button {
-        background-color: #4caf50;
-        color: white;
-        cursor: pointer;
-      }
-
-      button:hover {
-        background-color: #45a049;
-      }
-
-      input[type="number"] {
-        width: 200px;
-        text-align: center;
-      }
-
-      #mainButtons {
-        display: flex;
-        gap: 10px;
-        margin-top: 15px;
-        flex-wrap: wrap;
-      }
-
-      #controls {
-        margin-top: 15px;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-
-      .board {
-        display: none;
-        margin-top: 20px;
-        width: max-content;
-        border: 2px solid white;
-        border-radius: 8px;
-        background-color: rgba(245, 245, 245, 0.85);
-      }
-
-      .cell {
-        width: 50px;
-        height: 50px;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-size: 30px;
-      }
-
-      .white {
-        background-color: white;
-      }
-
-      .black {
-        background-color: black;
-      }
-
-      .queen {
-        color: gold;
-        animation: pop 0.4s ease;
-      }
-
-      @keyframes pop {
-        from {
-          transform: scale(0.3);
-          opacity: 0;
-        }
-        to {
-          transform: scale(1);
-          opacity: 1;
-        }
-      }
-
-      #solutionCounter {
-        font-size: 20px;
-        font-weight: bold;
-        margin-top: 10px;
-      }
-
-      #dialog {
-        display: none;
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        padding: 20px;
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-        border-radius: 8px;
-        z-index: 1000;
-      }
-    </style>
-  </head>
-
-  <body>
-    <h1><i class="fas fa-chess-queen"></i> N-Queens Visualization</h1>
-
-    <div id="mainButtons">
-      <input
-        type="number"
-        id="boardSize"
-        placeholder="Enter board size (N ≤ 10)"
-        min="1"
-        max="10"
-      />
-      <button onclick="startVisualization()">Start</button>
-      <button onclick="resetPage()">Reset</button>
-      <button onclick="toggleFullscreen()">Fullscreen</button>
-    </div>
-
-    <div id="controls">
-      <label for="speedRange">Speed:</label>
-      <input type="range" id="speedRange" min="1" max="10" value="5" />
-      <span id="speedLabel">1x</span>
-      <button id="pauseBtn">Pause</button>
-      <button id="playBtn" style="display: none">Play</button>
-    </div>
-
-    <div id="solutionCounter"></div>
-    <div id="board" class="board"></div>
-
-    <div id="dialog"></div>
-
-    <script>
-      const boardEl = document.getElementById("board");
-const dialog = document.getElementById("dialog");
-const pauseBtn = document.getElementById("pauseBtn");
-const playBtn = document.getElementById("playBtn");
-const solutionCounter = document.getElementById("solutionCounter");
-const boardSize = document.getElementById("boardSize");
-
-      let isPaused = false;
-      let animationSpeed = 1000;
-
-      document.getElementById("speedRange").addEventListener("input", function () {
-        const multiplier = this.value / 5;
-        animationSpeed = 1000 / multiplier;
-        document.getElementById("speedLabel").innerText =
-          multiplier.toFixed(2) + "x";
-      });
-
-      document.getElementById("pauseBtn").onclick = () => {
-        isPaused = true;
-        pauseBtn.style.display = "none";
-        playBtn.style.display = "inline";
-      };
-
-      document.getElementById("playBtn").onclick = () => {
-        isPaused = false;
-        playBtn.style.display = "none";
-        pauseBtn.style.display = "inline";
-      };
-
-      function sleep(ms) {
-        return new Promise((r) => setTimeout(r, ms));
-      }
-
-      function showDialog(msg) {
-        dialog.innerText = msg;
-        dialog.style.display = "block";
-        setTimeout(() => (dialog.style.display = "none"), 4000);
-      }
-
-      function createBoard(n) {
-        return Array.from({ length: n }, () => Array(n).fill(0));
-      }
-
-      function isSafe(board, row, col) {
-        for (let i = 0; i < row; i++) if (board[i][col]) return false;
-        for (let i = row, j = col; i >= 0 && j >= 0; i--, j--)
-          if (board[i][j]) return false;
-        for (let i = row, j = col; i >= 0 && j < board.length; i--, j++)
-          if (board[i][j]) return false;
-        return true;
-      }
-
-      async function solve(board, row, solutions) {
-        if (row === board.length) {
-          solutions.push(board.map((r) => [...r]));
-          return;
-        }
-        for (let col = 0; col < board.length; col++) {
-          if (isSafe(board, row, col)) {
-            board[row][col] = 1;
-            await solve(board, row + 1, solutions);
-            board[row][col] = 0;
-          }
-        }
-      }
-
-function render(board) {
-  boardEl.style.display = "grid"; // ✅ show only when ready
-  boardEl.innerHTML = "";
-  boardEl.style.gridTemplateColumns = `repeat(${board.length}, 50px)`;
-
-  board.forEach((r, i) =>
-    r.forEach((c, j) => {
-      const d = document.createElement("div");
-      d.className = `cell ${(i + j) % 2 ? "black" : "white"}`;
-      if (c) d.innerHTML = '<i class="fas fa-chess-queen queen"></i>';
-      boardEl.appendChild(d);
-    })
-  );
-}
-
-      async function startVisualization() {
-        const n = parseInt(boardSize.value);
-        if (!n || n < 1 || n > 10) {
-          showDialog("Please enter a value between 1 and 10.");
-          return;
-        }
-
-        const board = createBoard(n);
-        const solutions = [];
-        await solve(board, 0, solutions);
-showDialog(`Total Solutions: ${solutions.length}`);
-        for (let i = 0; i < solutions.length; i++) {
-          while (isPaused) await sleep(100);
-          solutionCounter.innerText = `Solution ${i + 1}`;
-          render(solutions[i]);
-          await sleep(animationSpeed);
-        }
-
-      }
-
-      function resetPage() {
-        location.reload();
-      }
-
-      function toggleFullscreen() {
-        if (!document.fullscreenElement) {
-          document.documentElement.requestFullscreen();
-        } else {
-          document.exitFullscreen();
-        }
-      }
-    </script>
-  </body>
+   <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>N-Queens Visualization</title>
+      <link
+         rel="stylesheet"
+         href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+         />
+      <style>
+         body {
+         font-family: Arial, sans-serif;
+         display: flex;
+         flex-direction: column;
+         height: 100vh;
+         margin: 0;
+         padding: 20px;
+         background-image: url("chess.jpg");
+         background-size: cover;
+         background-position: center;
+         color: white;
+         }
+         h1 {
+         margin-bottom: 20px;
+         text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.7);
+         }
+         input,
+         button {
+         padding: 10px;
+         font-size: 16px;
+         margin: 5px;
+         border-radius: 5px;
+         border: none;
+         }
+         button {
+         background-color: #4caf50;
+         color: white;
+         cursor: pointer;
+         }
+         button:hover {
+         background-color: #45a049;
+         }
+         input[type="number"] {
+         width: 200px;
+         text-align: center;
+         }
+         #mainButtons {
+         display: flex;
+         gap: 10px;
+         margin-top: 15px;
+         flex-wrap: wrap;
+         }
+         #controls {
+         margin-top: 15px;
+         display: flex;
+         gap: 10px;
+         align-items: center;
+         }
+         .board {
+         display: none;
+         margin-top: 20px;
+         width: max-content;
+         border: 2px solid white;
+         border-radius: 8px;
+         background-color: rgba(245, 245, 245, 0.85);
+         }
+         .cell {
+         width: 50px;
+         height: 50px;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         font-size: 30px;
+         }
+         .white {
+         background-color: white;
+         }
+         .black {
+         background-color: black;
+         }
+         .queen {
+         color: gold;
+         animation: pop 0.4s ease;
+         }
+         @keyframes pop {
+         from {
+         transform: scale(0.3);
+         opacity: 0;
+         }
+         to {
+         transform: scale(1);
+         opacity: 1;
+         }
+         }
+         #solutionCounter {
+         font-size: 20px;
+         font-weight: bold;
+         margin-top: 10px;
+         }
+         #dialog {
+         display: none;
+         position: fixed;
+         top: 50%;
+         left: 50%;
+         transform: translate(-50%, -50%);
+         padding: 20px;
+         background-color: rgba(0, 0, 0, 0.8);
+         color: white;
+         border-radius: 8px;
+         z-index: 1000;
+         }
+      </style>
+   </head>
+   <body>
+      <h1><i class="fas fa-chess-queen"></i> N-Queens Visualization</h1>
+      <div id="mainButtons">
+         <input
+            type="number"
+            id="boardSize"
+            placeholder="Enter board size (N ≤ 10)"
+            min="1"
+            max="10"
+            />
+         <button onclick="startVisualization()">Start</button>
+         <button onclick="resetPage()">Reset</button>
+         <button onclick="toggleFullscreen()">Fullscreen</button>
+      </div>
+      <div id="controls">
+         <label for="speedRange">Speed:</label>
+         <input type="range" id="speedRange" min="1" max="10" value="5" />
+         <span id="speedLabel">1x</span>
+         <button id="pauseBtn">Pause</button>
+         <button id="playBtn" style="display: none">Play</button>
+      </div>
+      <div id="solutionCounter"></div>
+      <div id="board" class="board"></div>
+      <div id="dialog"></div>
+      <script>
+         const boardEl = document.getElementById("board");
+         const dialog = document.getElementById("dialog");
+         const pauseBtn = document.getElementById("pauseBtn");
+         const playBtn = document.getElementById("playBtn");
+         const solutionCounter = document.getElementById("solutionCounter");
+         const boardSize = document.getElementById("boardSize");
+         
+         let isPaused = false;
+         let animationSpeed = 1000;
+         
+         document.getElementById("speedRange").addEventListener("input", function () {
+           const multiplier = this.value / 5;
+           animationSpeed = 1000 / multiplier;
+           document.getElementById("speedLabel").innerText =
+             multiplier.toFixed(2) + "x";
+         });
+         
+         document.getElementById("pauseBtn").onclick = () => {
+           isPaused = true;
+           pauseBtn.style.display = "none";
+           playBtn.style.display = "inline";
+         };
+         
+         document.getElementById("playBtn").onclick = () => {
+           isPaused = false;
+           playBtn.style.display = "none";
+           pauseBtn.style.display = "inline";
+         };
+         
+         function sleep(ms) {
+           return new Promise((r) => setTimeout(r, ms));
+         }
+         
+         function showDialog(msg) {
+           dialog.innerText = msg;
+           dialog.style.display = "block";
+           setTimeout(() => (dialog.style.display = "none"), 4000);
+         }
+         
+         function createBoard(n) {
+           return Array.from({ length: n }, () => Array(n).fill(0));
+         }
+         
+         function isSafe(board, row, col) {
+           for (let i = 0; i < row; i++) if (board[i][col]) return false;
+           for (let i = row, j = col; i >= 0 && j >= 0; i--, j--)
+             if (board[i][j]) return false;
+           for (let i = row, j = col; i >= 0 && j < board.length; i--, j++)
+             if (board[i][j]) return false;
+           return true;
+         }
+         
+         async function solve(board, row, solutions) {
+           if (row === board.length) {
+             solutions.push(board.map((r) => [...r]));
+             return;
+           }
+           for (let col = 0; col < board.length; col++) {
+             if (isSafe(board, row, col)) {
+               board[row][col] = 1;
+               await solve(board, row + 1, solutions);
+               board[row][col] = 0;
+             }
+           }
+         }
+         
+         function render(board) {
+         boardEl.style.display = "grid"; // ✅ show only when ready
+         boardEl.innerHTML = "";
+         boardEl.style.gridTemplateColumns = `repeat(${board.length}, 50px)`;
+         
+         board.forEach((r, i) =>
+         r.forEach((c, j) => {
+         const d = document.createElement("div");
+         d.className = `cell ${(i + j) % 2 ? "black" : "white"}`;
+         if (c) d.innerHTML = '<i class="fas fa-chess-queen queen"></i>';
+         boardEl.appendChild(d);
+         })
+         );
+         }
+         
+         async function startVisualization() {
+           const n = parseInt(boardSize.value);
+           if (!n || n < 1 || n > 10) {
+             showDialog("Please enter a value between 1 and 10.");
+             return;
+           }
+         
+           const board = createBoard(n);
+           const solutions = [];
+           await solve(board, 0, solutions);
+         showDialog(`Total Solutions: ${solutions.length}`);
+           for (let i = 0; i < solutions.length; i++) {
+             while (isPaused) await sleep(100);
+             solutionCounter.innerText = `Solution ${i + 1}`;
+             render(solutions[i]);
+             await sleep(animationSpeed);
+           }
+         
+         }
+         
+         function resetPage() {
+           location.reload();
+         }
+         
+         function toggleFullscreen() {
+           if (!document.fullscreenElement) {
+             document.documentElement.requestFullscreen();
+           } else {
+             document.exitFullscreen();
+           }
+         }
+      </script>
+   </body>
 </html>
-
-
-
